@@ -19,7 +19,7 @@ struct Node{
     Student data;
     Node *pre;
     Node *next;
-};
+}*tail=NULL,*head=NULL;
 
 int main(){
 
