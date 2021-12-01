@@ -1,19 +1,20 @@
 #include <iostream>
 #include <string>
+#include <limits>
 #define MAX 6
 using namespace std;
 
 
-struct Courses{
+struct Course{
     int CRN;
-    string course;
+    Course *next = NULL;
 };
 struct Student{
     int studentID;
     string studentName;
     int studentLevel;
     float GPA;
-    Courses list[MAX];
+    Course *list;
 };
 struct Node{
     Student data;
@@ -26,14 +27,17 @@ struct Node{
 
 
 //
-Courses List(Node *list, int n);
+Course *List(Node *list, int n);
 
 Node *CreateEmpty(int ID);
 Node *Tailsearch(int find);
 Node *HeadSearch(int find);
 Node *SearchForID();
+void SearchGPA();
+void SearchCRN();
 void Display(Node *node);
 void InsertRear(int ID);
+void DeleteUsingID();
 
 
 
@@ -43,40 +47,55 @@ int main(){
 
     do
     {
-        cout <<"Your Choice: ";
-        cin >> choice;
-        switch(choice)
-        {
-            case 1:
-                InsertRear(ID+1);
-                ID++;
-                break;
-            case 2:
-                SearchForID();
-                break;
+        try{
+            cout <<"Your Choice: ";
+            cin >> choice;
+            switch(choice)
+            {
+                case 1:
+                    cout << endl;
+                    InsertRear(ID+1);
+                    ID++;
+                    break;
+                case 2:
+                    Display(SearchForID());
+                    break;
+                case 4:
+                    SearchCRN();
+                    break;
+                case 5:
+                    SearchGPA();
+                    break;
+                case 6:
+                    DeleteUsingID();
+            }
+            if (!cin.good())
+                throw -1;
+        }
+        catch (...){
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
     } while (choice != 3);
     
 }
 
-Courses List(Node *list, int n){
-    Courses *temp = new Courses;
-    if (n != -1){
+Course *List(int n){
+    Course *Head = new Course;
+    Head ->next=NULL;
+
+    if (n != 0){
         cout << "Enter CRN: ";
-        cin >> temp ->CRN;
-        cin.ignore();
-        cout << "Enter Name of coures: ";
-        getline(cin,temp ->course);
-        List(list,n-1);
-        return list -> data.list[n];
+        cin >> Head ->CRN;
+        Head -> next = List(n-1); 
     }
-    return *temp;
+    return Head;
 }
 Node *CreateEmpty(int ID)
 {
     Node *temp = new Node;
+
     temp ->data.studentID = ID;
-    cout << temp ->data.studentID;
     cin.ignore();
     cout << "Name of Student: ";
     getline(cin , temp -> data.studentName);
@@ -84,10 +103,11 @@ Node *CreateEmpty(int ID)
     cin >> temp ->data.studentLevel;
     cout << "GPA: ";
     cin >> temp ->data.GPA;
+
     int counter = -1;
     cout << "How many coures to regsiter: ";
     cin >> counter;
-    List(temp,counter-1);
+    temp ->data.list = List(counter);
 
     temp ->next = NULL;
     temp ->pre = NULL;
@@ -104,53 +124,139 @@ void InsertRear(int ID){
         tail ->next = temp;
         tail = temp;
     }
+    cout << endl;
 }
 Node *TailSearch(int find){
     Node *cur = tail;
+    if (find  > cur->data.studentID )
+        return cur;
     while (cur->data.studentID != find && cur->pre != NULL){
         cur = cur -> pre;
     }
     return cur;
-}
+}   
 Node *HeadSearch(int find){
     Node *cur = head;
-    while (cur->data.studentID != find && cur->next != NULL){
+    while ( cur->data.studentID != find && cur->next != NULL){
         cur = cur -> next;
     }
     return cur;
 }
 Node *SearchForID(){
-    Node *temp = head;
-    int check = tail ->data.studentID /2;
-    int find;
-    cout << "ID of student: ";
-    cin >> find;
-    int choice = (check <= find) ? 1: 0;
-    switch(choice){
-        case 0:
-            cout << "Head";
-            temp = HeadSearch(find);
-            Display(temp);
-            break;
-        case 1:
-            cout << "tail";
-            temp = TailSearch(find);
-            Display(temp);
-            break;
+     Node *temp = head;
+    if (head != NULL){
+        int check = tail ->data.studentID /2;
+        int find;
+        cout << "ID of student: ";
+        cin >> find;
+        cout << endl;
+        int choice = (check < find) ? 1: 0;
+        switch(choice){
+            case 0:
+                temp = HeadSearch(find);
+                break;
+            case 1:
+                temp = TailSearch(find);
+                break;
+        }
+        if (temp ->data.studentID != find){
+            cout << "not found\n";
+            return NULL;
+        }
+        return temp;
     }
-    
-
-    if (temp ->data.studentID != find){
-        return NULL;
-        cout << "Not found";
-    }
-    return temp;
-
+    cout << "Underflow\n" << endl;
+    return NULL;
 }
 
 void Display(Node *node){
-    cout << node ->data.studentID << endl;
-    cout << node ->data.studentName<< endl;
-    cout << node -> data.studentLevel<< endl;
-    cout << node -> data.GPA<< endl;
+    if (node != NULL){
+        cout << "Student Info: " << endl;
+        cout << "ID: "<<node ->data.studentID << endl;
+        cout << "Name: "<<node ->data.studentName<< endl;
+        cout << "Level: "<<node -> data.studentLevel<< endl;
+        cout << "GPA: "<< node -> data.GPA<< endl;
+        Course *temp = node->data.list;
+        cout << "\nRegistered courses are:\n";
+        while(temp ->next != NULL){
+            cout <<"CRN: "<< temp->CRN << endl;
+            temp = temp ->next;
+        }
+        cout << endl;
+    }
+}
+
+void SearchCRN(){
+    int CRN;
+    cout << "Enter CRN for the coures: ";
+    cin >> CRN;
+    cout << endl;
+
+   if (head != NULL){
+        Node *temp = head;
+        do{
+            Course *coures = temp->data.list;
+            do{
+                if (CRN == coures ->CRN){
+                    Display(temp);
+                    break;
+                }
+                coures = coures ->next;
+            }
+            while (coures != NULL);
+            temp = temp->next;
+        }
+        while (temp!= NULL);
+   }
+   else {
+       cout << "UnderFlow\n";
+   }
+    
+}
+void SearchGPA(){
+    float min,max;
+    cout << "Enter min GPA:";
+    cin >>min;
+    cout <<"Enter max GPA: ";
+    cin >> max;
+    cout << endl;
+
+   if (head != NULL){
+        Node *temp = head;
+        do{
+            if (min <= temp->data.GPA && max >= temp->data.GPA)
+                Display(temp);
+            temp = temp ->next;
+        }while (temp!= NULL);
+    }
+    else {
+        cout << "UnderFlow\n";
+    }
+    
+}
+void DeleteUsingID(){
+    Node *temp = SearchForID();
+    if (temp == head){
+        if (head ->next == NULL){
+            cout <<"Student has been deleted \n";
+            head = tail = NULL;
+            delete temp;
+            temp =NULL;
+        }
+        else {
+            cout <<"Student has been deleted \n";
+            head = head ->next;
+            delete temp;
+            temp =NULL;
+        }
+
+    }
+    else {
+        cout <<"Student has been deleted \n";
+        temp -> next ->pre = temp ->pre;
+        temp ->pre ->next = temp ->next;
+        delete temp;
+        temp = NULL;
+
+    }
 }
