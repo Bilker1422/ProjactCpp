@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <limits>
-#define MAX 6
 using namespace std;
 
 
@@ -48,6 +47,7 @@ int main(){
     do
     {
         try{
+            cout << "1.To insert new Student\n2.To search for student using his ID\n3.To search for coures\n4.To search for range GPA\n5.To delete using his ID\n6.To exit\n";
             cout <<"Your Choice: ";
             cin >> choice;
             switch(choice)
@@ -60,13 +60,13 @@ int main(){
                 case 2:
                     Display(SearchForID());
                     break;
-                case 4:
+                case 3:
                     SearchCRN();
                     break;
-                case 5:
+                case 4:
                     SearchGPA();
                     break;
-                case 6:
+                case 5:
                     DeleteUsingID();
             }
             if (!cin.good())
@@ -76,7 +76,7 @@ int main(){
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
-    } while (choice != 3);
+    } while (choice != 6);
     
 }
 
@@ -165,7 +165,7 @@ Node *SearchForID(){
         }
         return temp;
     }
-    cout << "Underflow\n" << endl;
+    cout << "\nUnderflow\n" << endl;
     return NULL;
 }
 
@@ -193,11 +193,13 @@ void SearchCRN(){
     cout << endl;
 
    if (head != NULL){
+        int counter = 0;
         Node *temp = head;
         do{
             Course *coures = temp->data.list;
             do{
                 if (CRN == coures ->CRN){
+                    counter++;
                     Display(temp);
                     break;
                 }
@@ -207,10 +209,14 @@ void SearchCRN(){
             temp = temp->next;
         }
         while (temp!= NULL);
+
+        if (counter == 0)
+            cout << "not found\n";
    }
    else {
-       cout << "UnderFlow\n";
+       cout << "UnderFlow\n\n";
    }
+
     
 }
 void SearchGPA(){
@@ -222,22 +228,30 @@ void SearchGPA(){
     cout << endl;
 
    if (head != NULL){
+       int counter = 0;
         Node *temp = head;
         do{
             if (min <= temp->data.GPA && max >= temp->data.GPA)
                 Display(temp);
             temp = temp ->next;
         }while (temp!= NULL);
+        if (counter == 0)
+            cout << "not found\n";
     }
     else {
-        cout << "UnderFlow\n";
+        cout << "UnderFlow\n\n";
     }
     
 }
 void DeleteUsingID(){
     Node *temp = SearchForID();
-    if (temp == head){
-        if (head ->next == NULL){
+    if (temp == NULL){
+
+    }
+    else if (temp == head){
+        if (temp == NULL){
+        }
+        else if(head ->next == NULL){
             cout <<"Student has been deleted \n";
             head = tail = NULL;
             delete temp;
