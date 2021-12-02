@@ -67,6 +67,22 @@ void InsertRear(int ID){
     }
     cout << endl;
 }
+void Display(Node *node){
+    if (node != NULL){
+        cout << "Student Info: " << endl;
+        cout << "ID: "<<node ->data.studentID << endl;
+        cout << "Name: "<<node ->data.studentName<< endl;
+        cout << "Level: "<<node -> data.studentLevel<< endl;
+        cout << "GPA: "<< node -> data.GPA<< endl;
+        Course *temp = node->data.list;
+        cout << "\nRegistered courses are:\n";
+        while(temp ->next != NULL){
+            cout <<"CRN: "<< temp->CRN << endl;
+            temp = temp ->next;
+        }
+        cout << endl;
+    }
+}
 	
 int main(){
     int ID = 0;
