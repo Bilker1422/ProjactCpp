@@ -67,6 +67,48 @@ void InsertRear(int ID){
     }
     cout << endl;
 }
+Node *TailSearch(int find){
+    Node *cur = tail;
+    if (find  > cur->data.studentID )
+        return cur;
+    while (cur->data.studentID != find && cur->pre != NULL){
+        cur = cur -> pre;
+    }
+    return cur;
+}   
+Node *HeadSearch(int find){
+    Node *cur = head;
+    while ( cur->data.studentID != find && cur->next != NULL){
+        cur = cur -> next;
+    }
+    return cur;
+}
+Node *SearchForID(){
+     Node *temp = head;
+    if (head != NULL){
+        int check = tail ->data.studentID /2;
+        int find;
+        cout << "ID of student: ";
+        cin >> find;
+        cout << endl;
+        int choice = (check < find) ? 1: 0;
+        switch(choice){
+            case 0:
+                temp = HeadSearch(find);
+                break;
+            case 1:
+                temp = TailSearch(find);
+                break;
+        }
+        if (temp ->data.studentID != find){
+            cout << "not found\n";
+            return NULL;
+        }
+        return temp;
+    }
+    cout << "\nUnderflow\n" << endl;
+    return NULL;
+}
 void Display(Node *node){
     if (node != NULL){
         cout << "Student Info: " << endl;
