@@ -21,6 +21,65 @@ struct Node{
     Node *next;
 }*tail=NULL,*head=NULL;
 
+
+
+
+
+//
+Course *List(Node *list, int n);
+
+Node *CreateEmpty(int ID);
+Node *Tailsearch(int find);
+Node *HeadSearch(int find);
+Node *SearchForID();
+void SearchGPA();
+void SearchCRN();
+void Display(Node *node);
+void InsertRear(int ID);
+void DeleteUsingID();
+
+
+
+int main(){
+    int ID = 0;
+    int choice;
+
+    do
+    {
+        try{
+            cout << "1.To insert new Student\n2.To search for student using his ID\n3.To search for coures\n4.To search for range GPA\n5.To delete using his ID\n6.To exit\n";
+            cout <<"Your Choice: ";
+            cin >> choice;
+            switch(choice)
+            {
+                case 1:
+                    cout << endl;
+                    InsertRear(ID+1);
+                    ID++;
+                    break;
+                case 2:
+                    Display(SearchForID());
+                    break;
+                case 3:
+                    SearchCRN();
+                    break;
+                case 4:
+                    SearchGPA();
+                    break;
+                case 5:
+                    DeleteUsingID();
+            }
+            if (!cin.good())
+                throw -1;
+        }
+        catch (...){
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    } while (choice != 6);
+    
+}
+
 Course *List(int n){
     Course *Head = new Course;
     Head ->next=NULL;
@@ -32,12 +91,9 @@ Course *List(int n){
     }
     return Head;
 }
-
 Node *CreateEmpty(int ID)
 {
     Node *temp = new Node;
-    temp ->next = NULL;
-    temp ->pre = NULL;
 
     temp ->data.studentID = ID;
     cin.ignore();
@@ -53,8 +109,12 @@ Node *CreateEmpty(int ID)
     cin >> counter;
     temp ->data.list = List(counter);
 
+    temp ->next = NULL;
+    temp ->pre = NULL;
     return temp;
 }
+
+
 void InsertRear(int ID){
     Node *temp = CreateEmpty(ID);
     if (head == NULL)
@@ -108,6 +168,7 @@ Node *SearchForID(){
     cout << "\nUnderflow\n" << endl;
     return NULL;
 }
+
 void Display(Node *node){
     if (node != NULL){
         cout << "Student Info: " << endl;
@@ -124,44 +185,92 @@ void Display(Node *node){
         cout << endl;
     }
 }
-	
-int main(){
-    int ID = 0;
-    int choice;
 
-    do
-    {
-        try{
-            cout << "1.To insert new Student\n2.To search for student using his ID\n3.To search for coures\n4.To search for range GPA\n5.To delete using his ID\n6.To exit\n";
-            cout <<"Your Choice: ";
-            cin >> choice;
-            switch(choice)
-            {
-                case 1:
-                    cout << endl;
-                    InsertRear(ID+1);
-                    ID++;
+void SearchCRN(){
+    int CRN;
+    cout << "Enter CRN for the coures: ";
+    cin >> CRN;
+    cout << endl;
+
+   if (head != NULL){
+        int counter = 0;
+        Node *temp = head;
+        do{
+            Course *coures = temp->data.list;
+            do{
+                if (CRN == coures ->CRN){
+                    counter++;
+                    Display(temp);
                     break;
-                case 2:
-                    
-                    break;
-                case 3:
-                    
-                    break;
-                case 4:
-                   
-                    break;
-                case 5:
-                    break;
-                    
+                }
+                coures = coures ->next;
             }
-            if (!cin.good())
-                throw -1;
+            while (coures != NULL);
+            temp = temp->next;
         }
-        catch (...){
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        }
-    } while (choice != 6);
+        while (temp!= NULL);
+
+        if (counter == 0)
+            cout << "not found\n";
+   }
+   else {
+       cout << "UnderFlow\n\n";
+   }
+
     
+}
+void SearchGPA(){
+    float min,max;
+    cout << "Enter min GPA:";
+    cin >>min;
+    cout <<"Enter max GPA: ";
+    cin >> max;
+    cout << endl;
+
+   if (head != NULL){
+       int counter = 0;
+        Node *temp = head;
+        do{
+            if (min <= temp->data.GPA && max >= temp->data.GPA)
+                Display(temp);
+            temp = temp ->next;
+        }while (temp!= NULL);
+        if (counter == 0)
+            cout << "not found\n";
+    }
+    else {
+        cout << "UnderFlow\n\n";
+    }
+    
+}
+void DeleteUsingID(){
+    Node *temp = SearchForID();
+    if (temp == NULL){
+
+    }
+    else if (temp == head){
+        if (temp == NULL){
+        }
+        else if(head ->next == NULL){
+            cout <<"Student has been deleted \n";
+            head = tail = NULL;
+            delete temp;
+            temp =NULL;
+        }
+        else {
+            cout <<"Student has been deleted \n";
+            head = head ->next;
+            delete temp;
+            temp =NULL;
+        }
+
+    }
+    else {
+        cout <<"Student has been deleted \n";
+        temp -> next ->pre = temp ->pre;
+        temp ->pre ->next = temp ->next;
+        delete temp;
+        temp = NULL;
+
+    }
 }
